@@ -1,6 +1,10 @@
 package tokens
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"encoding/json"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 // PasswordCredentialsV2 represents the required options to authenticate
 // with a username and password.
@@ -13,6 +17,10 @@ type PasswordCredentialsV2 struct {
 // with a token.
 type TokenCredentialsV2 struct {
 	ID string `json:"id,omitempty" required:"true"`
+}
+
+type CustomCredentialsV2 struct {
+	CustomCredential json.RawMessage `json:"auth" required:"true"`
 }
 
 // AuthOptionsV2 wraps a gophercloud AuthOptions in order to adhere to the
@@ -50,10 +58,22 @@ type AuthOptions struct {
 	TenantName       string `json:"tenantName,omitempty"`
 	AllowReauth      bool   `json:"-"`
 	TokenID          string
+	CustomCredential string `json:"customCredential,omitempty"`
 }
 
 // ToTokenV2CreateMap builds a token request body from the given AuthOptions.
 func (opts AuthOptions) ToTokenV2CreateMap() (map[string]interface{}, error) {
+	if opts.CustomCredential != "" {
+		v2Opts := &CustomCredentialsV2{
+			CustomCredential: json.RawMessage(opts.CustomCredential),
+		}
+		b, err := gophercloud.BuildRequestBody(v2Opts, "")
+		if err != nil {
+			return nil, err
+		}
+		return b, nil
+	}
+
 	v2Opts := AuthOptionsV2{
 		TenantID:   opts.TenantID,
 		TenantName: opts.TenantName,
@@ -87,6 +107,7 @@ func Create(client *gophercloud.ServiceClient, auth AuthOptionsBuilder) (r Creat
 		r.Err = err
 		return
 	}
+
 	resp, err := client.Post(CreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes:     []int{200, 203},
 		OmitHeaders: []string{"X-Auth-Token"},
