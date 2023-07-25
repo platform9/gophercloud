@@ -43,7 +43,8 @@ type AuthOptions struct {
 	Username string `json:"username,omitempty"`
 	UserID   string `json:"-"`
 
-	Password string `json:"password,omitempty"`
+	Password         string `json:"password,omitempty"`
+	CustomCredential string `json:"customCredential,omitempty"`
 
 	// Passcode is used in TOTP authentication method
 	Passcode string `json:"passcode,omitempty"`

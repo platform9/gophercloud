@@ -47,6 +47,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	applicationCredentialName := os.Getenv("OS_APPLICATION_CREDENTIAL_NAME")
 	applicationCredentialSecret := os.Getenv("OS_APPLICATION_CREDENTIAL_SECRET")
 	systemScope := os.Getenv("OS_SYSTEM_SCOPE")
+	customCredential := os.Getenv("OS_CUSTOM_CREDENTIAL")
 
 	// If OS_PROJECT_ID is set, overwrite tenantID with the value.
 	if v := os.Getenv("OS_PROJECT_ID"); v != "" {
@@ -131,6 +132,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 		ApplicationCredentialName:   applicationCredentialName,
 		ApplicationCredentialSecret: applicationCredentialSecret,
 		Scope:                       scope,
+		CustomCredential:            customCredential,
 	}
 
 	return ao, nil

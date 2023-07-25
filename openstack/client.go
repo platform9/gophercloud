@@ -134,6 +134,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		TenantName:       options.TenantName,
 		AllowReauth:      options.AllowReauth,
 		TokenID:          options.TokenID,
+		CustomCredential: options.CustomCredential,
 	}
 
 	result := tokens2.Create(v2Client, v2Opts)
@@ -167,6 +168,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 			return nil
 		}
 	}
+
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
 		return V2EndpointURL(catalog, opts)
 	}
